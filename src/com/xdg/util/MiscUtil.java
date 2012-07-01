@@ -87,34 +87,38 @@ public class MiscUtil {
 //
 //        new Thread(new Runnable() {
 //            public void run() {
-                SwingUtilities.invokeLater(new Runnable() {
-                           public void run() {
-                               label.setText(text);
-                           }
-                       });
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                label.setText(text);
+            }
+        });
 //            }
 //        }).start();
 
     }
 
-    public static void serialize(Object obj,String fullPath) throws IOException {
-            ObjectOutputStream oos=new ObjectOutputStream(new FileOutputStream(fullPath));
-            oos.writeObject(obj);
-            oos.close();
-        }
+    public static void serialize(Object obj, String fullPath) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fullPath));
+        oos.writeObject(obj);
+        oos.close();
+    }
 
-        public static Object deserialize(String fullPath){
-            ObjectInputStream ois= null;
-            try {
-                ois = new ObjectInputStream(new FileInputStream(fullPath));
-                return ois.readObject();
-            } catch (IOException e) {
-                log.error(e,e);
-                return null;
-            } catch (ClassNotFoundException e) {
-                log.error(e,e);
-                return null;
-            }
+    public static Object deserialize(String fullPath) {
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(new FileInputStream(fullPath));
+            return ois.readObject();
+        } catch (IOException e) {
+            log.error(e, e);
+            return null;
+        } catch (ClassNotFoundException e) {
+            log.error(e, e);
+            return null;
         }
+    }
+
+    public static boolean isWinOS(){
+        return System.getProperties().getProperty("os.name").toLowerCase().contains("window");
+    }
 
 }

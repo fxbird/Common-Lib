@@ -16,35 +16,53 @@ import java.util.Map;
 
 public class PropUtil {
     private static final Log log = LogFactory.getLog(PropUtil.class);
-    private static final Map<String, PropertiesConfiguration> propConfigs=new HashMap<String, PropertiesConfiguration>();
+    private static final Map<String, PropUtil> propConfigs = new HashMap<String, PropUtil>();
+    private PropertiesConfiguration config;
+
+    private PropUtil(String pkgPath) throws ConfigurationException {
+        config = new PropertiesConfiguration(getFileURL(pkgPath));
+    }
+
     public static URL getFileURL(String pkgPath) {
         return PropUtil.class.getResource(pkgPath);
     }
 
-    public static PropertiesConfiguration getPropConfig(String pkgPath) {
-    	if (propConfigs.get(pkgPath)==null){
-    		try {
-				propConfigs.put(pkgPath, new PropertiesConfiguration(getFileURL(pkgPath)));
-			} catch (ConfigurationException e) {
-				log.error(e,e);
-			}
-    	}
-    	
-    	return propConfigs.get(pkgPath);
-    }
-
-    public static PropertiesConfiguration getPropConfigWithoutExtName(String path) {
-        return getPropConfig(path + ".properties");
-    }
-
-    public static String getFromProp(PropertiesConfiguration config, String defaultValue, String... keys) {
-        for (String key : keys) {
-            if (StringUtils.isNotEmpty(config.getString(key))) {
-                return config.getString(key);
+    public static PropUtil getInstance(String pkgPath) {
+        if (propConfigs.get(pkgPath) != null) {
+            return propConfigs.get(pkgPath);
+        } else {
+            try {
+                propConfigs.put(pkgPath, new PropUtil(pkgPath));
+                return propConfigs.get(pkgPath);
+            } catch (ConfigurationException e) {
+                log.error(e);
+                return null;
             }
         }
+    }
 
-        return defaultValue;
+    public String getString(String key) {
+        return getConfig().getString(key);
+    }
+
+    public String getString(String key, String dftValue) {
+        return getConfig().getString(key,dftValue);
+    }
+
+    public long getLong(String key){
+        return getConfig().getLong(key);
+    }
+
+    public long getLong(String key,long dftValue){
+        return getConfig().getLong(key,dftValue);
+    }
+
+    public int getInt(String key){
+        return getConfig().getInt(key);
+    }
+
+    public int getInt(String key,int dftValue){
+        return getConfig().getInt(key,dftValue);
     }
 
     public static List<Pair<String>> getAllEntries(PropertiesConfiguration config) {
@@ -59,30 +77,18 @@ public class PropUtil {
 
         return entries;
     }
-    
-//    public static int addAndSave(PropertiesConfiguration config,String key,String value) throws ConfigurationException {
-//        int cnt=1;
-//        String oldValue= config.getString(key);
-//        if (StringUtils.isEmpty(oldValue)){
-//            config.setProperty(key, value);
-//        } else{
-//            String[] values=oldValue.split(",");
-//            Set set=ArrayUtil.array2Set(values);
-//            set.add(value);
-//            cnt=set.size();
-//            config.setProperty(key,ArrayUtil.set2StringByDeli(set,Const.PROP_DELI));
-//        }
-//        
-//        config.save();
-//        
-//        return  cnt;
-//    }
-    
-    public static void addAndSave(PropertiesConfiguration config,String key,String value) throws ConfigurationException {
-    	config.setAutoSave(true);
-        config.setProperty(key, value);
-//        config.save();
-        
-    } 
 
+    public void addAndSave(String key, String value)  {
+        getConfig().setAutoSave(true);
+        getConfig().setProperty(key, value);
+        try {
+            getConfig().save();
+        } catch (ConfigurationException e) {
+            log.error(e);
+        }
+    }
+
+    public PropertiesConfiguration getConfig() {
+        return config;
+    }
 }

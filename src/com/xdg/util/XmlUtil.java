@@ -75,4 +75,23 @@ public class XmlUtil {
         return str.toString();
 
     }
+
+    public static String getElementValue(Node node,String xpath){
+        Element element=selectElement(node,xpath);
+            if (element==null){
+                    return null;
+                }else {
+                    return element.getText();
+                }
+        }
+
+    public static List<String> getElementValues(Node node,String xpath){
+        List<String> values=new ArrayList<String>();
+        for(Element element:selectElements(node,xpath)){
+            values.add(element.getText());
+        }
+
+        return values;
+    }
+
 }

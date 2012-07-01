@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Bird Common Lib" default="dist">
+    <property name="version" value="0.5"/>
+    <property name="jarName" value="build/Bird-Common-Lib-${version}.jar"/>
+    <property name="destDir" value="I:\My Documents\program\java\projects\eclipse\mye10\notebook-git\lib"/>
+
+    <path id="jars">
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="dist">
+        <delete dir="build"/>
+        <mkdir dir="build"/>
+        <javac srcdir="src" destdir="build">
+            <classpath refid="jars"/>
+        </javac>
+        <jar jarfile="${jarName}" basedir="build"/>
+        <copy file="${jarName}" todir="${destDir}"/>
+    </target>
+</project>

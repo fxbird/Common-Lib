@@ -1,7 +1,6 @@
 package com.xdg.util;
 
 import com.xdg.bean.JarFileItem;
-import com.xdg.util.hg.HGUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -70,22 +69,22 @@ public class ReflectUtil {
         return clazzs;
     }
 
-    public static List<Class> findClass(String proj) throws ClassNotFoundException, MalformedURLException {
-
-        ClassLoader originalLoader=Thread.currentThread().getContextClassLoader();
-
-        URLClassLoader classLoader=new URLClassLoader(HGUtil.getClassURLs(proj),originalLoader);
-
-        Thread.currentThread().setContextClassLoader(classLoader);
-        List<File> classes = FileUtil.findFilesByKeyword(proj+"\\web\\WEB-INF\\classes", "$", false, "class");
-        List<Class> rst = new ArrayList<Class>();
-        for (File clazz : classes) {
-            String qname = PathUtil.getRelativePath(clazz.getAbsolutePath(), proj+"\\web\\WEB-INF\\classes").replace("\\", ".");
-            rst.add(classLoader.loadClass(qname));
-        }
-
-        return rst;
-    }
+//    public static List<Class> findClass(String proj) throws ClassNotFoundException, MalformedURLException {
+//
+//        ClassLoader originalLoader=Thread.currentThread().getContextClassLoader();
+//
+//        URLClassLoader classLoader=new URLClassLoader(HGUtil.getClassURLs(proj),originalLoader);
+//
+//        Thread.currentThread().setContextClassLoader(classLoader);
+//        List<File> classes = FileUtil.findFilesByKeyword(proj+"\\web\\WEB-INF\\classes", "$", false, "class");
+//        List<Class> rst = new ArrayList<Class>();
+//        for (File clazz : classes) {
+//            String qname = PathUtil.getRelativePath(clazz.getAbsolutePath(), proj+"\\web\\WEB-INF\\classes").replace("\\", ".");
+//            rst.add(classLoader.loadClass(qname));
+//        }
+//
+//        return rst;
+//    }
 
     public static List<Class> findClassFromJar(String jarPath) throws ClassNotFoundException, IOException {
         List<JarFileItem> items = FileUtil.findFilesFromJarByKeyword(jarPath, "$", false, "class");
