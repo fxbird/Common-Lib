@@ -2,7 +2,7 @@
 <project name="Bird Common Lib" default="dist">
     <property name="version" value="0.5"/>
     <property name="jarName" value="build/Bird-Common-Lib-${version}.jar"/>
-    <property name="destDir" value="I:\My Documents\program\java\projects\eclipse\mye10\notebook-git\lib"/>
+    <property name="destDir" value="I:\My Documents\program\java\projects\eclipse\4.2\notebook-git\lib"/>
 
     <path id="jars">
         <fileset dir="lib">

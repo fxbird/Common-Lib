@@ -43,7 +43,7 @@ public class XdgUtil {
     }
 
     /**
-     * 整个窗体内按都有效
+     * take effects in the whole frame
      *
      * @param comp
      * @param key
@@ -62,8 +62,7 @@ public class XdgUtil {
     }
 
     /**
-     * 当目标组件范围内时，按好用
-     *
+     * take effects in the specific frame
      * @param comp
      * @param key
      * @param action

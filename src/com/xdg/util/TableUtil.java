@@ -48,7 +48,7 @@ public class TableUtil {
                         .getTableCellRendererComponent(jtable, jtable.getValueAt(row, col), false, false, row, col).getPreferredSize().getWidth();
                 width = Math.max(width, preferedWidth);
             }
-            header.setResizingColumn(column); // 此行很重要
+            header.setResizingColumn(column); //important
             column.setWidth(width + jtable.getIntercellSpacing().width + 5);
         }
 

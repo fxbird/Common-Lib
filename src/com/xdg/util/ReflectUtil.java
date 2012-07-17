@@ -2,6 +2,8 @@ package com.xdg.util;
 
 import com.xdg.bean.JarFileItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +18,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ReflectUtil {
+    private final static Log log = LogFactory.getLog(ReflectUtil.class);
+
     public static List<String> getPublicField(Class clazz) {
         List<String> rst = new ArrayList<String>();
         Field[] fields = clazz.getFields();
@@ -94,6 +98,15 @@ public class ReflectUtil {
         }
 
         return result;
+    }
+
+    public static Class getFieldType(Class clazz, String field) {
+        try {
+            return clazz.getDeclaredField(field).getType();
+        } catch (NoSuchFieldException e) {
+            log.error(e);
+            return null;
+        }
     }
 
 
