@@ -1,6 +1,5 @@
 package com.xdg.util;
 
-import com.xdg.inter.FileFilterExt;
 import com.xdg.inter.JarFileFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -124,29 +124,29 @@ public class FileUtil {
      * @return
      */
     public static List<JarFileItem> findFilesFromJarByKeyword(String jarPath, String keyword, String ext) throws IOException {
-        return findFilesFromJarByKeyword(jarPath,keyword,true,ext);
+        return findFilesFromJarByKeyword(jarPath, keyword, true, ext);
     }
 
     public static List<JarFileItem> findFilesFromJarByKeyword(String jarPath, final String keyword, boolean include, String ext) throws IOException {
-        if (StringUtils.isBlank(keyword)){
-            return listJarFile(jarPath,null,ext);
-        }else {
+        if (StringUtils.isBlank(keyword)) {
+            return listJarFile(jarPath, null, ext);
+        } else {
             JarFileFilter filter;
-            if (include){
-                filter=new JarFileFilter() {
+            if (include) {
+                filter = new JarFileFilter() {
                     public boolean accept(JarEntry entry) {
                         return entry.getName().contains(keyword);
                     }
                 };
-            }else {
-                filter=new JarFileFilter() {
+            } else {
+                filter = new JarFileFilter() {
                     public boolean accept(JarEntry entry) {
                         return !entry.getName().contains(keyword);
                     }
                 };
             }
 
-            return listJarFile(jarPath,filter,ext);
+            return listJarFile(jarPath, filter, ext);
         }
     }
 
@@ -159,7 +159,7 @@ public class FileUtil {
             Enumeration<JarEntry> en = jar.entries();
             while (en.hasMoreElements()) {
                 JarEntry entry = en.nextElement();
-                if (entry.isDirectory() || !entry.getName().endsWith("."+ext)) {
+                if (entry.isDirectory() || !entry.getName().endsWith("." + ext)) {
                     continue;
                 }
 
@@ -180,7 +180,7 @@ public class FileUtil {
     }
 
     public static List<JarFileItem> listJarFile(String jarPath, String ext) throws IOException {
-        return listJarFile(jarPath,null,ext);
+        return listJarFile(jarPath, null, ext);
     }
 
     public static String getContentFromJar(String jarPath, String filePath) {
@@ -291,6 +291,95 @@ public class FileUtil {
 
         IOUtils.closeQuietly(is);
         return ++cnt;
+    }
+
+    public static long writePart(OutputStream os, InputStream is, long size, long start, long len, FileWriteProgress fileWriteProgress) throws IOException {
+        byte[] buffer = new byte[4096];
+        is.skip(start);
+        long pos = start;
+        long end;
+        if (pos + len - 1 > size - 1) {
+            end = size - 1;
+        } else {
+            end = start + len - 1;
+        }
+        int cnt = 0;
+        long total = 0;
+        while (true) {
+            if (pos + 4096 - 1 > end - 1) {
+                cnt = is.read(buffer, 0, (int) (end - pos + 1));
+            } else {
+                cnt = is.read(buffer);
+            }
+
+            os.write(buffer, 0, cnt);
+
+            total += cnt;
+            fileWriteProgress.changed(total);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+            if (pos + 4096 - 1 >= end - 1) {
+                break;
+            } else {
+                pos += cnt;
+            }
+        }
+
+        os.flush();
+        os.close();
+
+        return total;
+    }
+
+    public static File mergePartialFilesMT(File[] partials, final String finalFullPath) {
+//        ArrayList<Callable> callables=new ArrayList<Callable>();
+//        for (int i = 0; i < partials.length; i++) {
+//              File partial=partials[i];
+//              callables.add(new Callable() {
+//                  public Object call() throws Exception {
+//                      RandomAccessFile raf=new RandomAccessFile(new File(finalFullPath),"rws");
+//                      raf.skipBytes(pos);
+//                      raf.seek();
+//                      return null;
+//                  }
+//              })
+//              long bytes=getFileByteNum(partial);
+//
+//
+//        }
+
+        return null;
+    }
+
+    public static File mergePartialFilesLinear(File[] partials, final String finalFullPath) {
+        File file = new File(finalFullPath);
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(file);
+            for (File partial : partials) {
+                IOUtils.copy(new FileInputStream(partial), os);
+            }
+            os.flush();
+            os.close();
+        } catch (FileNotFoundException e) {
+            log.error(e);
+        } catch (IOException e) {
+            log.error(e);
+        }
+
+        return file;
+    }
+
+    public static long getFileByteNum(File file) {
+        try {
+            return new RandomAccessFile(file, "r").length();
+        } catch (IOException e) {
+            log.error(e);
+            return -1;
+        }
     }
 
 }
