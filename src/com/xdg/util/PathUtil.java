@@ -72,14 +72,14 @@ public class PathUtil {
         return path;
     }
 
-    public static String getFileNameFromPath(String projPath) {
-        projPath = replaceAntiSlash(projPath);
-        if (projPath.endsWith("/")) {
-            projPath = projPath.substring(0, projPath.length() - 1);
+    public static String getFileNameFromPath(String fullPath) {
+        fullPath = replaceAntiSlash(fullPath);
+        if (fullPath.endsWith("/")) {
+            fullPath = fullPath.substring(0, fullPath.length() - 1);
         }
 
-        int lastIdx = projPath.lastIndexOf("/");
-        return projPath.substring(lastIdx + 1);
+        int lastIdx = fullPath.lastIndexOf("/");
+        return fullPath.substring(lastIdx + 1);
     }
 
     public static String getExtName(String fileName) {

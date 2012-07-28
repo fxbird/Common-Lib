@@ -41,5 +41,13 @@ public class ArrayUtil {
         return list;
     }
 
+    public static boolean contains(String str,String[] arr){
+        for (String ele : arr) {
+            if (str.contains(ele)) return true;
+        }
+
+        return false;
+    }
+
 
 }

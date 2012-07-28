@@ -294,7 +294,8 @@ public class FileUtil {
     }
 
     public static long writePart(OutputStream os, InputStream is, long size, long start, long len, FileWriteProgress fileWriteProgress) throws IOException {
-        byte[] buffer = new byte[4096];
+        int bufferSize = 64*1024;
+        byte[] buffer = new byte[bufferSize];
         is.skip(start);
         long pos = start;
         long end;
@@ -306,7 +307,7 @@ public class FileUtil {
         int cnt = 0;
         long total = 0;
         while (true) {
-            if (pos + 4096 - 1 > end - 1) {
+            if (pos + bufferSize - 1 > end - 1) {
                 cnt = is.read(buffer, 0, (int) (end - pos + 1));
             } else {
                 cnt = is.read(buffer);
@@ -321,7 +322,7 @@ public class FileUtil {
             } catch (InterruptedException e) {
                 log.error(e);
             }
-            if (pos + 4096 - 1 >= end - 1) {
+            if (pos + bufferSize - 1 >= end - 1) {
                 break;
             } else {
                 pos += cnt;
