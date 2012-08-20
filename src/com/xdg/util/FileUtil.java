@@ -293,8 +293,27 @@ public class FileUtil {
         return ++cnt;
     }
 
+    public static void write(File out, String content) {
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(out);
+            fw.write(content);
+        } catch (IOException e) {
+            log.error(e);
+        } finally {
+            if (fw != null) {
+                try {
+                    fw.close();
+                } catch (IOException e) {
+                    log.error(e);
+                }
+
+            }
+        }
+    }
+
     public static long writePart(OutputStream os, InputStream is, long size, long start, long len, FileWriteProgress fileWriteProgress) throws IOException {
-        int bufferSize = 64*1024;
+        int bufferSize = 64 * 1024;
         byte[] buffer = new byte[bufferSize];
         is.skip(start);
         long pos = start;
